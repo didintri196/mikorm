@@ -1,5 +1,5 @@
 
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![Logo](https://raw.githubusercontent.com/didintri196/mikorm/master/logo.png)
 
 
 # Mikrotik ORM (mikorm)
@@ -39,9 +39,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/didintri196/mikrotik-restfull/domain/models"
-	"github.com/didintri196/mikrotik-restfull/repositories"
-	"github.com/didintri196/mikrotik-restfull/utils/routeros"
 )
 
 func main() {
@@ -64,3 +61,53 @@ func main() {
 
 [Documentation](https://linktodocumentation)
 
+
+## Features
+
+```go
+
+type SecretRepository struct {
+	*routeros.RouterOS
+}
+
+func (repo SecretRepository) Browse(filter models.Secret) (secrets []models.Secret, err error) {
+	err = repo.Command("/ppp/secret").Where(&filter).Scan(&secrets).Error
+	return
+}
+
+func (repo SecretRepository) Add(secret models.Secret) (err error) {
+	return repo.Command("/ppp/secret").Add(&secret).Error
+}
+
+func (repo SecretRepository) Read(filter models.Secret) (secret models.Secret, err error) {
+	err = repo.Command("/ppp/secret").Where(&filter).Print(&secret).Error
+	return
+}
+
+func (repo SecretRepository) Edit(filter models.Secret, data models.Secret) (err error) {
+	err = repo.Command("/ppp/secret").SetByID("", &data).Error
+	return
+}
+
+func (repo SecretRepository) Remove(ID string) (err error) {
+	err = repo.Command("/ppp/secret").RemoveByID(ID).Error
+	return
+}
+
+func (repo SecretRepository) Enable(ID string) (err error) {
+	err = repo.Command("/ppp/secret").EnableByID(ID).Error
+	return
+}
+
+func (repo SecretRepository) Disable(ID string) (err error) {
+	err = repo.Command("/ppp/secret").DisableByID(ID).Error
+	return
+}
+
+func NewSecretRepository(routerOS *routeros.RouterOS) interfaces.ISecretRepository {
+	return &SecretRepository{
+		RouterOS: routerOS,
+	}
+}
+
+```
