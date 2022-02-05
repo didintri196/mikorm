@@ -1,20 +1,20 @@
-package routeros
+package mikorm
 
 import (
 	"fmt"
 	"strings"
 )
 
-func (this *RouterOS) EnableByID(ID string) *RouterOS {
+func (route *MikORM) EnableByID(ID string) *MikORM {
 	//set action last command
-	this.Query[len(this.Query)-1] += "/enable"
+	route.Query[len(route.Query)-1] += "/enable"
 
 	//cek where
-	this.Query = append(this.Query, fmt.Sprintf("=.id=%s", ID))
+	route.Query = append(route.Query, fmt.Sprintf("=.id=%s", ID))
 
-	this.Run(this.Query)
+	route.Run(route.Query)
 
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(this.Query, " ")))
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d rows updated | message %s", len(this.Reply.Done.Map), this.Reply.Done.Word))
-	return this
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(route.Query, " ")))
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d rows updated | message %s", len(route.Reply.Done.Map), route.Reply.Done.Word))
+	return route
 }

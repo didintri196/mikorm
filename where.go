@@ -1,11 +1,11 @@
-package routeros
+package mikorm
 
 import (
 	"fmt"
 	"reflect"
 )
 
-func (this *RouterOS) Where(filter interface{}) *RouterOS {
+func (route *MikORM) Where(filter interface{}) *MikORM {
 	var stmt reflect.Value = reflect.ValueOf(filter)
 	if stmt.IsNil() && stmt.CanAddr() {
 		stmt.Set(reflect.New(stmt.Type()))
@@ -17,10 +17,10 @@ func (this *RouterOS) Where(filter interface{}) *RouterOS {
 			kName := typeOfS.Field(i).Tag.Get("json")
 			kValue := stmt.Elem().Field(i).String()
 			if kValue != "" {
-				this.Filter = append(this.Filter, fmt.Sprintf(`?%s=%s`, kName, kValue))
+				route.Filter = append(route.Filter, fmt.Sprintf(`?%s=%s`, kName, kValue))
 			}
 		}
 	}
 
-	return this
+	return route
 }
