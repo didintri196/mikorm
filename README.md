@@ -39,17 +39,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/didintri196/mikorm"
 )
 
 func main() {
-	config := routeros.Configs{
+	config := mikorm.Configs{
 		Ip:        "127.0.0.1",
 		Port:      "8728",
 		Username:  "admin",
 		Password:  "",
 		ModeDebug: true,
 	}
-	connRouteOS := routeros.New(config)
+	connRouteOS := mikorm.New(config)
 
 ......
 
