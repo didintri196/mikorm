@@ -1,4 +1,4 @@
-package routeros
+package mikorm
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func (this *RouterOS) SetByID(ID string, data interface{}) *RouterOS {
+func (route *MikORM) SetByID(ID string, data interface{}) *MikORM {
 	//set action last command
-	this.Query[len(this.Query)-1] += "/set"
+	route.Query[len(route.Query)-1] += "/set"
 
 	var stmt reflect.Value = reflect.ValueOf(data)
 	if stmt.IsNil() && stmt.CanAddr() {
@@ -22,18 +22,18 @@ func (this *RouterOS) SetByID(ID string, data interface{}) *RouterOS {
 			kValue := stmt.Elem().Field(i).String()
 			if kValue != "" {
 				if kName != ".id" {
-					this.Query = append(this.Query, fmt.Sprintf("=%s=%s", kName, kValue))
+					route.Query = append(route.Query, fmt.Sprintf("=%s=%s", kName, kValue))
 				}
 			}
 		}
 	}
 
 	//cek where
-	this.Query = append(this.Query, fmt.Sprintf("=.id=%s", ID))
+	route.Query = append(route.Query, fmt.Sprintf("=.id=%s", ID))
 
-	this.Run(this.Query)
+	route.Run(route.Query)
 
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(this.Query, " ")))
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d rows updated | message %s", len(this.Reply.Done.Map), this.Reply.Done.Word))
-	return this
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(route.Query, " ")))
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d rows updated | message %s", len(route.Reply.Done.Map), route.Reply.Done.Word))
+	return route
 }

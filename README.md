@@ -29,7 +29,7 @@ Library Mikrotik API menggunakan ORM untuk mempermudah integrasi ke Mikrotik
 Install mikorm with go get
 
 ```bash
-  go get github.com/didintri196/mikorm
+go get github.com/didintri196/mikorm
 ```
     
 ## Usage/Examples

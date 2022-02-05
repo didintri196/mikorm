@@ -1,4 +1,4 @@
-package routeros
+package mikorm
 
 import (
 	"encoding/json"
@@ -6,40 +6,40 @@ import (
 	"strings"
 )
 
-func (this *RouterOS) Scan(bind interface{}) *RouterOS {
+func (route *MikORM) Scan(bind interface{}) *MikORM {
 	//set action last command
-	this.Query[len(this.Query)-1] += "/print"
+	route.Query[len(route.Query)-1] += "/print"
 
 	//cek filter
-	this.Query = append(this.Query, this.Filter...)
+	route.Query = append(route.Query, route.Filter...)
 
 	// Run Query
-	this.Run(this.Query)
+	route.Run(route.Query)
 
 	// Deteksi Error
-	if this.DetectError() {
-		return this
+	if route.DetectError() {
+		return route
 	}
 
 	var dataArr []interface{}
-	for i := 0; i < len(this.Reply.Re); i++ {
-		dataArr = append(dataArr, this.Reply.Re[i].Map)
+	for i := 0; i < len(route.Reply.Re); i++ {
+		dataArr = append(dataArr, route.Reply.Re[i].Map)
 	}
 
 	jsonbody, err := json.Marshal(dataArr)
 	if err != nil {
 		// do error check
-		this.Error = err
-		return this
+		route.Error = err
+		return route
 	}
 
 	if err := json.Unmarshal(jsonbody, bind); err != nil {
 		// do error check
-		this.Error = err
-		return this
+		route.Error = err
+		return route
 	}
 
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(this.Query, " ")))
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d rows | message %s", len(this.Re), this.Reply.Done.Word))
-	return this
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(route.Query, " ")))
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d rows | message %s", len(route.Re), route.Reply.Done.Word))
+	return route
 }

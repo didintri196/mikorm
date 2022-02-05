@@ -1,4 +1,4 @@
-package routeros
+package mikorm
 
 import (
 	"encoding/json"
@@ -7,39 +7,39 @@ import (
 	"strings"
 )
 
-func (this *RouterOS) Print(bind interface{}) *RouterOS {
+func (route *MikORM) Print(bind interface{}) *MikORM {
 	//set action last command
-	this.Query[len(this.Query)-1] += "/print"
+	route.Query[len(route.Query)-1] += "/print"
 
 	//cek filter
-	this.Query = append(this.Query, this.Filter...)
+	route.Query = append(route.Query, route.Filter...)
 
 	// Run Query
-	this.Run(this.Query)
+	route.Run(route.Query)
 
-	if len(this.Reply.Re) == 0 {
-		this.Error = errors.New("Data Not Found")
+	if len(route.Reply.Re) == 0 {
+		route.Error = errors.New("Data Not Found")
 	}
 
 	// Deteksi Error
-	if this.DetectError() {
-		return this
+	if route.DetectError() {
+		return route
 	}
 
 	// Parsing Data Mikrotik
-	jsonbody, err := json.Marshal(this.Reply.Re[0].Map)
+	jsonbody, err := json.Marshal(route.Reply.Re[0].Map)
 	if err != nil {
 		// do error check
-		this.Error = err
-		return this
+		route.Error = err
+		return route
 	}
 
 	if err := json.Unmarshal(jsonbody, bind); err != nil {
 		// do error check
-		this.Error = err
-		return this
+		route.Error = err
+		return route
 	}
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(this.Query, " ")))
-	this.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d fields | message %s", len(this.Re[0].Map), this.Reply.Done.Word))
-	return this
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(route.Query, " ")))
+	route.Debug().Msg(fmt.Sprintf("| DEBUG | [REPLY] %d fields | message %s", len(route.Re[0].Map), route.Reply.Done.Word))
+	return route
 }

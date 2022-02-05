@@ -1,14 +1,15 @@
-package routeros
+package mikorm
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
-	"gopkg.in/routeros.v2"
 	"os"
 	"strings"
+
+	"github.com/rs/zerolog"
+	"gopkg.in/routeros.v2"
 )
 
-type RouterOS struct {
+type MikORM struct {
 	Configs
 	*routeros.Reply
 	Error error
@@ -25,42 +26,42 @@ type Configs struct {
 	ModeDebug bool
 }
 
-func New(config Configs) RouterOS {
+func New(config Configs) MikORM {
 	zerolog.SetGlobalLevel(zerolog.NoLevel)
 	if config.ModeDebug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
-	return RouterOS{config, &routeros.Reply{}, nil, RegisterLog(), []string{}, []string{}}
+	return MikORM{config, &routeros.Reply{}, nil, RegisterLog(), []string{}, []string{}}
 }
 
-func (this *RouterOS) Run(query []string) *RouterOS {
-	host := fmt.Sprintf("%s:%s", this.Ip, this.Port)
-	c, err := routeros.Dial(host, this.Username, this.Password)
+func (route *MikORM) Run(query []string) *MikORM {
+	host := fmt.Sprintf("%s:%s", route.Ip, route.Port)
+	c, err := routeros.Dial(host, route.Username, route.Password)
 	if err != nil {
-		this.Debug().Msg(fmt.Sprintf("| ERROR | %s", err.Error()))
-		this.Error = err
-		return this
+		route.Debug().Msg(fmt.Sprintf("| ERROR | %s", err.Error()))
+		route.Error = err
+		return route
 	}
 	defer c.Close()
 
 	re, err := c.RunArgs(query)
 	if err != nil {
-		this.Error = err
-		return this
+		route.Error = err
+		return route
 	}
-	this.Reply = re
-	return this
+	route.Reply = re
+	return route
 }
 
-func (this *RouterOS) Command(query string) *RouterOS {
-	this.Query = []string{query}
-	return this
+func (route *MikORM) Command(query string) *MikORM {
+	route.Query = []string{query}
+	return route
 }
 
-func (this *RouterOS) DetectError() bool {
-	if this.Error != nil {
-		this.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(this.Query, " ")))
+func (route *MikORM) DetectError() bool {
+	if route.Error != nil {
+		route.Debug().Msg(fmt.Sprintf("| DEBUG | [QUERY] %s", strings.Join(route.Query, " ")))
 		return true
 	}
 	return false
