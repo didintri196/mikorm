@@ -9,14 +9,31 @@ import (
 	"gopkg.in/routeros.v2"
 )
 
-type MikORM struct {
-	Configs
-	*routeros.Reply
-	Error error
-	zerolog.Logger
-	Query  []string
-	Filter []string
-}
+type (
+	IMikORM interface {
+		Add(data interface{}) *MikORM
+		Run(query []string) *MikORM
+		Command(query string) *MikORM
+		DetectError() bool
+		EnableByID(ID string) *MikORM
+		Where(filter interface{}) *MikORM
+		DisableByID(ID string) *MikORM
+		Print(bind interface{}) *MikORM
+		SetByID(ID string, data interface{}) *MikORM
+		RemoveByID(ID string) *MikORM
+		Scan(bind interface{}) *MikORM
+	}
+
+	MikORM struct {
+		Configs
+		*routeros.Reply
+		Error error
+		zerolog.Logger
+		Query  []string
+		Filter []string
+	}
+)
+
 
 type Configs struct {
 	Ip        string
@@ -26,13 +43,13 @@ type Configs struct {
 	ModeDebug bool
 }
 
-func New(config Configs) MikORM {
+func New(config Configs) IMikORM {
 	zerolog.SetGlobalLevel(zerolog.NoLevel)
 	if config.ModeDebug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
-	return MikORM{config, &routeros.Reply{}, nil, RegisterLog(), []string{}, []string{}}
+	return &MikORM{config, &routeros.Reply{}, nil, RegisterLog(), []string{}, []string{}}
 }
 
 func (route *MikORM) Run(query []string) *MikORM {
