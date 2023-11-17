@@ -43,16 +43,39 @@ import (
 )
 
 func main() {
-	config := mikorm.Configs{
-		Ip:        "127.0.0.1",
-		Port:      "8728",
-		Username:  "admin",
-		Password:  "",
-		ModeDebug: true,
+	type IpAddress struct {
+		Address   string `mikorm:"address"`
+		Network   string `mikorm:"network"`
+		Interface string `mikorm:"interface"`
 	}
-	connRouteOS := mikorm.New(config)
 
-......
+	gw := NewGateway(OptionGateway{
+		Host:     "localhost",
+		Port:     "8728",
+		Username: "admin",
+		Password: "admin",
+	})
+
+	err := gw.Connect()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	mikrotik := NewMikorm(gw)
+
+	var ipAddress []IpAddress
+
+	err = mikrotik.
+		Command("/ip/address/print").
+		Do().
+		Print(&ipAddress)
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println("TestPrint", ipAddress)
 
 }
 ```
@@ -61,48 +84,3 @@ func main() {
 ## Documentation
 
 [Documentation](https://linktodocumentation)
-
-
-## Features
-
-```go
-
-type SecretRepository struct {
-    MikORM *mikorm.MikORM
-}
-
-func (repo SecretRepository) Browse(filter models.Secret) (secrets []models.Secret, err error) {
-    err = repo.MikORM.Command("/ppp/secret").Where(&filter).Scan(&secrets).Error
-    return
-}
-
-func (repo SecretRepository) Add(secret models.Secret) (err error) {
-    return repo.MikORM.Command("/ppp/secret").Add(&secret).Error
-}
-
-func (repo SecretRepository) Read(filter models.Secret) (secret models.Secret, err error) {
-    err = repo.MikORM.Command("/ppp/secret").Where(&filter).Print(&secret).Error
-    return
-}
-
-func (repo SecretRepository) Edit(filter models.Secret, data models.Secret) (err error) {
-    err = repo.MikORM.Command("/ppp/secret").SetByID("", &data).Error
-    return
-}
-
-func (repo SecretRepository) Remove(ID string) (err error) {
-    err = repo.MikORM.Command("/ppp/secret").RemoveByID(ID).Error
-    return
-}
-
-func (repo SecretRepository) Enable(ID string) (err error) {
-    err = repo.MikORM.Command("/ppp/secret").EnableByID(ID).Error
-    return
-}
-
-func (repo SecretRepository) Disable(ID string) (err error) {
-    err = repo.MikORM.Command("/ppp/secret").DisableByID(ID).Error
-    return
-}
-
-```
